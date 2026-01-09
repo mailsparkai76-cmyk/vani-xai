@@ -1,0 +1,18 @@
+# Dockerfile for V.A.N.I-xAI Frontend Only
+# Serves static frontend files using lightweight Python server
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Create app directory
+WORKDIR /app
+
+# Copy only frontend files
+COPY frontend/ /app/frontend/
+
+# Expose port
+EXPOSE 5000
+
+# Simple Python static file server for frontend
+CMD ["python", "-m", "http.server", "5000", "--directory", "/app/frontend"]

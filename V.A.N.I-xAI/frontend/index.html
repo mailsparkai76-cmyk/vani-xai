@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V.A.N.I-xAI - Advanced AI Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCA3X3V8vcOOpFG-ENwtv73CZ8cD9F5dQI",
+      authDomain: "vani-xai-ff759.firebaseapp.com",
+      projectId: "vani-xai-ff759",
+      storageBucket: "vani-xai-ff759.firebasestorage.app",
+      messagingSenderId: "88327262116",
+      appId: "1:88327262116:web:a554f7b721255b3295fb31",
+      measurementId: "G-RLW8JR2K5C"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const analytics = getAnalytics(app);
+
+    // Make auth available globally
+    window.firebaseAuth = auth;
+    window.firebaseApp = app;
+    window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+    window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+    window.signOut = signOut;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.GoogleAuthProvider = GoogleAuthProvider;
+    window.signInWithPopup = signInWithPopup;
+    window.signInWithRedirect = signInWithRedirect;
+    window.getRedirectResult = getRedirectResult;
+  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="config.js"></script>
+</head>
+<body>
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="auth-modal" style="display: flex;">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>🤖 V.A.N.I-xAI</h1>
+        <p class="auth-subtitle">Advanced AI Assistant</p>
+      </div>
+
+      <form id="auth-form">
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-tab="login">Sign In</button>
+          <button type="button" class="auth-tab" data-tab="signup">Sign Up</button>
+        </div>
+
+        <div class="tab-content" id="login-tab" style="display: block;">
+          <input type="email" id="login-email" placeholder="Email" required>
+          <input type="password" id="login-password" placeholder="Password" required>
+          <button type="button" class="auth-btn" onclick="handleLogin()">
+            <span>Sign In</span>
+            <span class="icon">⚡</span>
+          </button>
+          <p class="auth-error" id="login-error"></p>
+          
+          <div class="auth-divider-text">OR</div>
+          
+          <button type="button" class="google-btn" onclick="handleGoogleSignIn()">
+            <svg class="google-icon" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <span>Sign in with Google</span>
+          </button>
+        </div>
+
+        <div class="tab-content" id="signup-tab">
+          <input type="email" id="signup-email" placeholder="Email" required>
+          <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required>
+          <input type="password" id="signup-confirm" placeholder="Confirm Password" required>
+          <button type="button" class="auth-btn" onclick="handleSignup()">
+            <span>Create Account</span>
+            <span class="icon">🚀</span>
+          </button>
+          <p class="auth-error" id="signup-error"></p>
+          
+          <div class="auth-divider-text">OR</div>
+          
+          <button type="button" class="google-btn" onclick="handleGoogleSignUp()">
+            <svg class="google-icon" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <span>Sign up with Google</span>
+          </button>
+        </div>
+
+        <div class="auth-divider"></div>
+        <p class="auth-footer">🔒 Secure • Powered by Firebase & Google</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Animated Background -->
+  <div class="background-animation">
+    <div class="stars"></div>
+    <div class="network"></div>
+    <div class="plasma"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container" style="display: none;" id="main-container">
+    
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+      <div class="logo-section">
+        <div class="logo-icon">🤖</div>
+        <h1>V.A.N.I-xAI</h1>
+        <p class="logo-subtitle">AI Assistant</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="status-panel">
+        <div class="status-header">System Status</div>
+        <div class="status-item">
+          <span class="status-label">Status</span>
+          <div class="status-indicator active"></div>
+          <span class="status-value">ONLINE</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">CPU</span>
+          <span class="status-value" id="cpuInfo">--</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">RAM</span>
+          <span class="status-value" id="ramInfo">--</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Time</span>
+          <span class="status-value" id="timeDisplay">00:00</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="quick-commands">
+        <div class="section-header">Quick Commands</div>
+        <button class="quick-btn" onclick="insertCommand('system stats')">
+          💻 System
+        </button>
+        <button class="quick-btn" onclick="insertCommand('system diagnostics')">
+          🔧 Diagnostics
+        </button>
+        <button class="quick-btn" onclick="insertCommand('tell me a joke')">
+          😂 Humor
+        </button>
+        <button class="quick-btn" onclick="insertCommand('what time is it')">
+          🕐 Time
+        </button>
+        <button class="quick-btn" onclick="insertCommand('network status')">
+          🌐 Network
+        </button>
+      </div>
+    </aside>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-content">
+      
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <h2>V.A.N.I-xAI Console</h2>
+          <p class="header-subtitle">Vāṇī Adhyātmik Navīn Intellect</p>
+        </div>
+        <div class="header-right">
+          <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme">
+            <span id="theme-icon">🌙</span>
+          </button>
+          <button class="icon-btn" onclick="clearChat()" title="Clear Chat">
+            <span>🗑️</span>
+          </button>
+          <button class="logout-btn" onclick="handleLogout()" title="Logout">
+            <span>🔓 Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat Area -->
+      <section class="chat-section">
+        <div class="messages" id="messages">
+          <div class="welcome-card">
+            <div class="welcome-header">
+              <div class="pulse-indicator"></div>
+              <h3>Welcome to V.A.N.I-xAI</h3>
+            </div>
+            <p class="welcome-text">Your advanced AI assistant is ready to assist</p>
+            <div class="divider-mini"></div>
+            
+            <div class="command-grid">
+              <div class="command-category">
+                <div class="category-title">⚙️ System</div>
+                <div class="command-buttons">
+                  <button class="cmd-btn" onclick="insertCommand('system stats')">Stats</button>
+                  <button class="cmd-btn" onclick="insertCommand('system diagnostics')">Diagnostics</button>
+                  <button class="cmd-btn" onclick="insertCommand('network status')">Network</button>
+                </div>
+              </div>
+
+              <div class="command-category">
+                <div class="category-title">🎮 Control</div>
+                <div class="command-buttons">
+                  <button class="cmd-btn" onclick="insertCommand('open chrome')">Chrome</button>
+                  <button class="cmd-btn" onclick="insertCommand('open notepad')">Notepad</button>
+                  <button class="cmd-btn" onclick="insertCommand('open explorer')">Explorer</button>
+                </div>
+              </div>
+
+              <div class="command-category">
+                <div class="category-title">🎯 Functions</div>
+                <div class="command-buttons">
+                  <button class="cmd-btn" onclick="insertCommand('tell me a joke')">Joke</button>
+                  <button class="cmd-btn" onclick="insertCommand('what time is it')">Time</button>
+                  <button class="cmd-btn" onclick="insertCommand('process memory')">Memory</button>
+                </div>
+              </div>
+
+              <div class="command-category">
+                <div class="category-title">🔍 Search</div>
+                <div class="command-buttons">
+                  <button class="cmd-btn" onclick="insertCommand('search anything')">Search</button>
+                  <button class="cmd-btn" onclick="insertCommand('play music')">YouTube</button>
+                  <button class="cmd-btn" onclick="insertCommand('tell me about')">Info</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Input Area -->
+      <footer class="input-footer">
+        <div class="input-wrapper">
+          <input 
+            id="userInput" 
+            type="text"
+            placeholder="Type your command or question..." 
+            autocomplete="off"
+          />
+          <button class="send-btn" onclick="send()" title="Send Command">
+            <span>SEND</span>
+            <span class="icon">⚡</span>
+          </button>
+        </div>
+        <div class="footer-info">
+          <span class="info-text">Press Enter to send • Type help for commands</span>
+        </div>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
